@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sist.com.bean.apple">
+  <select id="selectDeptList" resultType="dept">
+    SELECT * FROM DEPT
+  </select>
+  <select id="memberIdCheck" parameterType="java.lang.String" resultType="java.lang.String">
+    SELECT PASSWORD
+    FROM SIMEMBER
+    WHERE ID=#{VALUE}
+  </select>
+  <insert id="insertWrite" parameterType="boot">
+   INSERT INTO BOOTBOARD 
+   VALUES(BOOTBOARD_SEQ.NEXTVAL, #{subject}, #{author}, #{password}, #{contents}, 0, #{fileName}, SYSDATE)
+  </insert>
+  
+  <select id="selectBootList" resultType="boot" parameterType="java.util.HashMap">
+  SELECT RM,NO,SUBJECT,AUTHOR,PASSWORD,CONTENTS,HIT,FILENAME,REGDATE
+  FROM(
+  SELECT ROWNUM RM,NO,SUBJECT,AUTHOR,PASSWORD,CONTENTS,HIT,FILENAME,REGDATE
+  FROM(
+  SELECT NO,SUBJECT,AUTHOR,PASSWORD,CONTENTS,HIT,FILENAME,REGDATE
+  FROM BOOTBOARD
+  ORDER BY NO DESC))
+  WHERE RM BETWEEN #{start} AND #{end}
+  </select>
+  
+  <select id="getTotalBoot" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+  SELECT COUNT(*)
+  FROM BOOTBOARD
+  <if test="query!=null and data!=null">
+    <where>
+     ${query} LIKE '%'||#{data}||'%'
+    </where>
+  </if>
+  </select>
+  
+  
+  <update id="updateHit" parameterType="java.lang.Integer">
+  UPDATE BOOTBOARD SET
+  HIT=HIT+1
+  WHERE NO=#{VALUE}
+  </update>
+  <select id="infoBoardList" resultType="boot" parameterType="java.lang.Integer">
+  SELECT NO,SUBJECT,AUTHOR,PASSWORD,CONTENTS,HIT,FILENAME,REGDATE
+  FROM BOOTBOARD
+  WHERE NO=#{VALUE}
+  ORDER BY NO DESC
+  </select> 
+ <!--  <update id="updateList" parameterType="boot">
+  UPDATE BOOTBOARD SET
+  SUBJECT=#{subject},
+  AUTHOR=#{author},
+  PASSWORD=#{password}, 
+  CONTENTS=#{contents},
+  FILENAME=#{fileName}
+  </update> -->
+  <insert id="insertUpdate" parameterType="sist.com.dto.ParamBean">
+  INSERT INTO JAVADATA VALUES(#{no},#{msg})
+  </insert>
+  <update id="upupup" parameterType="sist.com.dto.ParamBean">
+  UPDATE JAVADATA SET MSG=#{msg} WHERE NO=#{no}
+  </update>
+  <select id="selectParam" resultType="sist.com.dto.ParamBean">
+  SELECT * FROM JAVADATA
+  </select>
+  <select id="getPassword" resultType="java.lang.String" parameterType="java.lang.Integer">
+  SELECT PASSWORD FROM BOOTBOARD
+  WHERE NO=#{VALUE}
+  </select>
+  <delete id="deleteInfo" parameterType="java.lang.Integer">
+  DELETE BOOTBOARD 
+  WHERE NO=#{VALUE}
+  </delete>
+  <update id="updateInfo" parameterType="boot">
+  UPDATE BOOTBOARD
+  SET SUBJECT=#{subject},
+  CONTENTS=#{contents}
+  WHERE NO=#{no}
+  </update>
+  
+  <insert id="insertScrap" parameterType="sist.com.dto.ScrabBean">
+  INSERT INTO SCRAB 
+  VALUES(SCRAB_SEQ.NEXTVAL, #{id}, #{subject},#{author},#{contents},0,#{fileName},SYSDATE)
+  </insert>
+  
+  <select id="selectScrab" parameterType="java.lang.String" resultType="boot">
+  SELECT NO,SUBJECT,AUTHOR,PASSWORD,CONTENTS,HIT,FILENAME,REGDATE
+  FROM BOOTBOARD
+  WHERE NO IN 
+  (SELECT NO FROM BOOTSCRAB
+  WHERE ID=#{VALUE})
+  </select>
+  
+  <insert id="insertScFun" parameterType="sist.com.dto.Scrab1">
+  INSERT INTO BOOTSCRAB
+  VALUES(#{id},#{no})
+  </insert>
+  
+  <delete id="deleteScFun" parameterType="sist.com.dto.Scrab1">
+  DELETE FROM BOOTSCRAB
+  WHERE ID=#{id} AND NO=#{no}
+  </delete>
+  
+  <select id="getGood" resultType="java.lang.Integer" parameterType="sist.com.dto.GoodOrBadBean">
+  SELECT GOOD 
+  FROM GOODORBAD
+  WHERE ID=#{id} AND NO=#{no}
+  </select>
+    <select id="getBad" resultType="java.lang.Integer" parameterType="sist.com.dto.GoodOrBadBean">
+  SELECT BAD 
+  FROM GOODORBAD
+  WHERE ID=#{id} AND NO=#{no}
+  </select>
+  <insert id="insertGood" parameterType="sist.com.dto.GoodOrBadBean">
+  INSERT INTO GOODORBAD VALUES(
+  #{id},#{no},#{good},#{bad})
+  </insert>
+  <delete id="deleteGood" parameterType="sist.com.dto.GoodOrBadBean">
+  DELETE GOODORBAD 
+  WHERE ID=#{id} AND NO=#{no}
+  </delete>
+  <select id="selectAllGood" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+  SELECT SUM(GOOD)
+  FROM GOODORBAD
+  WHERE NO=#{VALUE}
+  </select>
+  <select id="selectAllBad" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+  SELECT SUM(BAD)
+  FROM GOODORBAD
+  WHERE NO=#{VALUE}
+  </select>
+   <insert id="insertBad" parameterType="sist.com.dto.GoodOrBadBean">
+  INSERT INTO GOODORBAD VALUES(
+  #{id},#{no},#{good},#{bad})
+  </insert>
+  
+  <insert id="insertMemFun" parameterType="sist.com.dto.SimemberBean">
+  INSERT INTO SIMEMBER VALUES(
+  #{id},#{password},#{name})
+  </insert>
+  
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
